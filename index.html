@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Txurdinaga Ikastetxea · Sarrera</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css">
+  <link rel="icon" type="image/png" href="assets/IMG/icon.png">
+  
+</head>
+<body>
+<header class="cabecera">
+  <a class="identitatea" href="index.html"><span class="identitatea-mark">T</span><span><strong>TXURDINAGA</strong><small>IKASTETXEAREN KUDEAKETA</small></span></a>
+  <nav class="public-nav" aria-label="Nabigazio nagusia"><a class="text-link" href="paginas/parking.php">Parking publikoa</a><a class="btn btn-sec btn-mini" href="#login">Saioa hasi <span aria-hidden="true">→</span></a></nav>
+</header>
+
+<main class="contenedor">
+  <section class="hero vista-publica">
+    <div class="hero-copy">
+      <span class="eyebrow">TXURDINAGA · 2026/27 IKASTURTEA</span>
+      <h1>Ikastetxea, <em>leku bakar batean.</em></h1>
+      <p>Ikasleen, irakasleen eta ikastetxearen eguneroko kudeaketa errazagoa eta argiagoa.</p>
+      <div class="hero-actions"><a class="btn" href="#login">Nire eremura sartu <span aria-hidden="true">→</span></a><a class="text-link" href="#informazioa">Ikusi informazioa</a></div>
+    </div>
+    <div class="hero-visual" aria-label="Ikastetxearen egoera laburpena">
+      <div class="visual-top"><span class="status-dot"></span><span>IKASTETXEAREN EGOERA</span><strong>Aktibo</strong></div>
+      <div class="visual-number">412<span>/600</span></div><p>Uneko aforoa</p>
+      <div class="progress"><span style="width:69%"></span></div>
+      <div class="visual-grid"><div><strong>8</strong><span>Aparkaleku libre</span></div><div><strong>24</strong><span>Gaurko hitzorduak</span></div></div>
+    </div>
+  </section>
+
+  <section class="info-grid" id="informazioa">
+    <article class="info-card"><span class="card-icon">01</span><h2>Sarbide segurua</h2><p>Zure profilaren arabera egokitutako eremu pertsonala.</p></article>
+    <article class="info-card"><span class="card-icon">02</span><h2>Informazio argia</h2><p>Aforoaren eta aparkalekuaren egoera denbora errealean.</p></article>
+    <article class="info-card"><span class="card-icon">03</span><h2>Komunitate konektatua</h2><p>Ikasle, irakasle eta administrazioaren arteko koordinazioa.</p></article>
+  </section>
+</main>
+
+<div class="modal" id="login" role="dialog" aria-modal="true" aria-labelledby="login-title">
+  <div class="modal-caja tarjeta">
+    <a class="modal-cerrar" href="#" aria-label="Saioa ixtea">&times;</a>
+    <span class="eyebrow">EREMU PRIBATUA</span><h2 id="login-title">Ongi etorri berriro</h2>
+    <p class="nota">Zure erabiltzaile-mota automatikoki esleituko da.</p>
+    <form id="login-form" method="post" action="auth/login.php" novalidate>
+      <label for="login-email">Posta elektronikoa<input id="login-email" type="email" placeholder="izena@txurdinaga.eus" required name="email" autocomplete="username"></label>
+      <label for="login-password">Pasahitza<input id="login-password" type="password" placeholder="••••••••" required name="password" autocomplete="current-password"></label>
+      <p class="form-error" id="login-error" role="alert" hidden>Posta edo pasahitz baliogabea.</p>
+      <button class="btn" type="submit">Nire dashboarda ireki <span aria-hidden="true">→</span></button>
+    </form>
+    <p class="login-demo nota">Erabili ikastetxeak emandako sarbide-datuak.</p>
+  </div>
+</div>
+
+<script type="module">
+  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+  createChat({
+    webhookUrl: 'http://localhost:5678/webhook/9c28c255-e4be-4682-b887-083d766bcaf2/chat'
+  });
+</script>
+<footer class="pie">© 2026 Txurdinaga Ikastetxea <span>·</span> Laguntza <span>·</span> Pribatutasuna</footer>
+<script src="assets/app.js?v=3"></script>
+
+<!-- Cookie txartel flotatzailearen edukiontzi nagusia ('id'-ari esker JavaScript bidez ezkutatuko dugu) -->
+<div id="cookie-banner" class="cookie-banner">
+
+  <!-- Ikonoa eta testuak biltzen dituen barneko edukia (CSS Flexbox bidez lerrokatzeko) -->
+  <div class="cookie-content">
+    
+    <!-- Galletaren ikono grafikoa, itxura modernoagoa eta bisualki erakargarria emateko -->
+    <span class="cookie-icon">🍪</span>
+
+    <!-- Informatzeko testuen atala -->
+    <div class="cookie-text">
+      <!-- Oharraren izenburu nagusia negritan -->
+      <strong>Cookie-en erabilera / Uso de cookies</strong>
+      
+      <!-- Erabiltzaileari cookie-en helburua azaltzen dion legezko mezua -->
+      <p>Webgune honek cookie-ak erabiltzen ditu saioa kudeatzeko eta zure nabigazio esperientzia hobetzeko. / Utilizamos cookies para gestionar la sesión y mejorar tu experiencia.</p>
+    </div>
+
+  </div>
+
+  <!-- Botoia kokatzeko eta antolatzeko atala -->
+  <div class="cookie-actions">
+    <form method="post" action="api/cookie-consent.php">
+      <input type="hidden" name="onartu" value="bai">
+      <input type="hidden" name="return_to" value="../index.html">
+      <button class="btn btn-mini" type="submit">Aceptatu guztia / Aceptar todo</button>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>
