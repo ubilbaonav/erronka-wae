@@ -1,21 +1,21 @@
 <?php
 declare(strict_types=1);
 
-// 1. Saio-cookie-aren segurtasun parametroak konfiguratzen ditugu session_start() egin AURRETIK
+// Configuramos la cookie de sesión antes de iniciar la sesión.
 session_set_cookie_params([
-    'lifetime' => 0,        // Cookie-a nabigatzailea ixtean automatikoki ezabatzen da
-    'path' => '/',          // Cookie-a webgune osoko karpeta guztietan dago erabilgarri (XAMPP-erako ezinbestekoa)
-    'httponly' => true,     // XSS babesa: JavaScript bidez ezin da saio-cookie hau irakurri
-    'samesite' => 'Lax'     // CSRF babesa: Kanpoko orrialdeetatik datozen eskaera kaltegarriak ekiditen ditu
+    'lifetime' => 0,        // La cookie dura hasta que se cierra el navegador.
+    'path' => '/',          // La sesión está disponible en todas las rutas de la web.
+    'httponly' => true,     // JavaScript no puede leer la cookie directamente.
+    'samesite' => 'Lax'     // Limita el envío de la cookie desde otros sitios.
 ]);
 
-// 2. Zerbitzarian saioa abiarazten dugu eta PHPSESSID cookie-a nabigatzailera bidaltzen dugu
+// Iniciamos la sesión y PHP envía al navegador la cookie PHPSESSID.
 session_start();
 
 $dbAccount = 'login';
 require __DIR__ . '/../config/conexioa.php';
 
-// Formularioa POST bidez bidali ez bada, login orrira bideratzen dugu
+// Este archivo solo acepta los datos enviados por el formulario mediante POST.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: ../index.html#login');
     exit;
@@ -24,13 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $email = strtolower(trim((string) ($_POST['email'] ?? '')));
 $password = (string) ($_POST['password'] ?? '');
 
-// Baliozkotu emaila eta pasahitza ez daudela hutsik
+// Limpiamos el email y validamos que tenga formato correcto y que haya contraseña.
 if (!filter_var($email, FILTER_VALIDATE_EMAIL) || $password === '') {
     header('Location: ../index.html?error=1#login');
     exit;
 }
 
-// Erabiltzailea datu-basean bilatu SQL Injection erasoak saihestuz (prepared statement)
+// Buscamos el usuario por email mediante una consulta preparada.
+// El marcador ? evita insertar directamente datos del formulario en el SQL.
 $statement = $conn->prepare(
     'SELECT u.erabiltzaile_id, u.izena, u.abizenak, u.posta_elektronikoa, u.pasahitza,
             u.aktibo_dago, r.rol_izena
@@ -41,6 +42,7 @@ $statement = $conn->prepare(
 );
 
 if (!$statement) {
+    // Si la consulta no se puede preparar, no continuamos con un login incompleto.
     http_response_code(500);
     exit('Errorea saioa hastean.');
 }
@@ -50,17 +52,18 @@ $statement->execute();
 $user = $statement->get_result()->fetch_assoc();
 $statement->close();
 
-// Pasahitza eta erabiltzailea aktibo dagoen egiaztatu
+// Comprobamos dos condiciones: la contraseña coincide y la cuenta está activa.
 $passwordMatches = $user && hash_equals((string) $user['pasahitza'], $password);
 $isActive = $user && (int) $user['aktibo_dago'] === 1;
 
 if (!$passwordMatches || !$isActive) {
+    // Para el usuario mostramos un error genérico y no revelamos qué dato falló.
     $conn->close();
     header('Location: ../index.html?error=1#login');
     exit;
 }
 
-// Rola mapatu gure sistemako testuekin
+// Convertimos los nombres de rol de la base de datos a los valores usados por la aplicación.
 $roleMap = [
     'Bisitaria' => 'visita',
     'Ikaslea' => 'estudiante',
@@ -68,18 +71,19 @@ $roleMap = [
     'Admin' => 'administrador',
 ];
 
-// 3. Saioaren identifikazio-kodea (ID) berriro sortzen dugu segurtasunagatik (Session Fixation saihesteko)
+// Renovamos el ID de sesión después de autenticar para evitar session fixation.
 session_regenerate_id(true);
 
-// 4. Erabiltzailearen identifikazio datuak zerbitzariko saioan ($_SESSION) gordetzen ditugu
+// Guardamos en el servidor solo los datos necesarios para identificar al usuario
+// y aplicar sus permisos en las páginas protegidas.
 $_SESSION['user'] = [
-    'id' => (int) $user['erabiltzaile_id'],                       // Erabiltzailearen IDa
-    'email' => $user['posta_elektronikoa'],                       // Posta elektronikoa
-    'name' => trim($user['izena'] . ' ' . $user['abizenak']),     // Izena eta abizenak garbi
-    'role' => $roleMap[$user['rol_izena']] ?? 'visita',           // Rola (ikaslea, irakaslea, admin...)
+    'id' => (int) $user['erabiltzaile_id'],                       // ID interno del usuario.
+    'email' => $user['posta_elektronikoa'],                       // Email de acceso.
+    'name' => trim($user['izena'] . ' ' . $user['abizenak']),     // Nombre completo.
+    'role' => $roleMap[$user['rol_izena']] ?? 'visita',           // Rol interno de la aplicación.
 ];
 
-// Konexioa itxi eta erabiltzailea dashboard orrira bideratu
+// Cerramos la conexión y llevamos al usuario autenticado al dashboard.
 $conn->close();
 header('Location: ../paginas/dashboard.php');
 exit;

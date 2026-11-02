@@ -25,6 +25,8 @@ while ($roleRow = $roleResult->fetch_assoc()) {
 }
 
 $role = $user['role'];
+
+// Erabiltzaile arruntek beren ibilgailuak kudeatzen dituzte saioaren IDarekin.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_action'] ?? '') === 'add_vehicle') {
   $registration = strtoupper(trim((string) ($_POST['matrikula'] ?? '')));
   $brand = trim((string) ($_POST['marka'] ?? ''));
@@ -41,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_action'] ?? '') === '
 }
 
 if ($role === 'administrador' && $_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_action'] ?? '') === 'vehicle_admin') {
+  // Administratzailearen ibilgailuen CRUD-a: sortu, editatu eta ezabatu.
   $vehicleAction = $_POST['vehicle_action'] ?? '';
   $registration = strtoupper(trim((string) ($_POST['matrikula'] ?? '')));
   $originalRegistration = strtoupper(trim((string) ($_POST['original_matrikula'] ?? '')));
@@ -81,6 +84,7 @@ if (
   && $_SERVER['REQUEST_METHOD'] === 'POST'
   && !in_array($_POST['form_action'] ?? '', ['add_vehicle', 'vehicle_admin'], true)
 ) {
+  // Administratzailearen erabiltzaile CRUD-aren eskaerak hemen prozesatzen dira.
   $action = $_POST['user_action'] ?? '';
   $userId = (int) ($_POST['user_id'] ?? 0);
   $nan = trim((string) ($_POST['nan'] ?? ''));
@@ -123,10 +127,12 @@ if (
 }
 
 if ($role === 'administrador' && isset($_GET['edit_user'])) {
+  // Editatzeko formularioan erakutsiko den erabiltzailea kargatzen da.
   $editId = (int) $_GET['edit_user'];
   $editUser = getUserById($editId, $conn);
 }
 if ($role === 'administrador' && isset($_GET['edit_vehicle'])) {
+  // Administratzaileak editatu nahi duen ibilgailua matrikularekin bilatzen da.
   $vehicleRegistration = strtoupper(trim((string) $_GET['edit_vehicle']));
   $vehicleResult = $conn->prepare(
     'SELECT matrikula, erabiltzaile_id, marka, modeloa
@@ -143,6 +149,7 @@ if ($role === 'administrador' && isset($_GET['edit_vehicle'])) {
 }
 
 $zones = getParkingZones($conn);
+// URL-ko parking parametroak erabiltzailearen baimendutako eremuekin alderatzen dira.
 $requestedZone = $_GET['parking'] ?? null;
 $allowedZones = [
   'visita' => ['public'],
@@ -164,6 +171,7 @@ $parking = $zones[$selectedZone];
 $parkingSummary = parkingSummary($parking);
 $parkingSpots = '';
 foreach ($parking as $spot) {
+  // Plaza bakoitza mapa bisualerako HTML etiketa bihurtzen da.
   $state = $spot['occupied'] ? 'occupied' : 'free';
   $label = $spot['occupied'] ? 'okupatuta' : 'libre';
   $number = htmlspecialchars($spot['number'], ENT_QUOTES, 'UTF-8');
@@ -182,6 +190,7 @@ $students = [];
 $vehicles = getVehiclesByUserId($conn, (int) $user['id']);
 $allVehicles = [];
 if ($role === 'administrador') {
+  // Administratzaileak erabiltzaile eta ibilgailu guztien zerrendak behar ditu.
   $users = getUsers($conn);
   $allVehicles = getAllVehicles($conn);
 }

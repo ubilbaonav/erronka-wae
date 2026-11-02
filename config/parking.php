@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 function getParkingZones(mysqli $conn): array
 {
+    // Barneko izenak erabiltzen dira interfazeak eremu bakoitza rolarekin lotu dezan.
     $zones = [
         'student' => [],
         'teacher' => [],
@@ -25,6 +26,7 @@ function getParkingZones(mysqli $conn): array
     }
 
     while ($row = $result->fetch_assoc()) {
+        // Datu-baseko eremu-izenak frontend-ak erabiltzen duen formatura bihurtzen dira.
         $zone = $zoneNames[$row['gune_izena']] ?? null;
         if ($zone !== null) {
             $zones[$zone][] = [
@@ -39,6 +41,7 @@ function getParkingZones(mysqli $conn): array
 
 function parkingSummary(array $spots): array
 {
+    // Eremu baten okupazio-egoeraren laburpena kalkulatzen du.
     $total = count($spots);
     $occupied = count(array_filter($spots, static fn (array $spot): bool => $spot['occupied']));
     return [

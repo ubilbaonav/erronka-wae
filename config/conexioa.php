@@ -6,6 +6,7 @@ require_once __DIR__ . '/constantes.php';
 
 function conectarBaseDatos(string $account): mysqli
 {
+    // Rol bakoitzak behar dituen datu-baseko baimenekin bat datorren kontua erabiltzen du.
     $accounts = [
         'login' => ['web_login', 'loginweb123'],
         'administrador' => ['web_admin', 'adminweb123'],
@@ -15,6 +16,7 @@ function conectarBaseDatos(string $account): mysqli
     ];
     [$username, $password] = $accounts[$account] ?? $accounts['public'];
 
+    // Konexioa ireki eta errorea argi erakusten da ezin bada sortu.
     $conn = new mysqli(DB_HOST, $username, $password, DB_NAME);
     if ($conn->connect_error) {
         throw new RuntimeException('No se pudo conectar con la base de datos.');

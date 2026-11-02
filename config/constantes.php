@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'txurdinaga_sarbideak');
+
+// Cookie-en izena, balioa eta iraupena aplikazio osoan zentralizatzen dira.
 define('COOKIE_CONSENT_NAME', 'cookies_accepted');
 define('COOKIE_CONSENT_VALUE', 'true');
 define('COOKIE_CONSENT_DAYS', 30);

@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/constantes.php';
 
-
+// Administratzaileak erabiltzaile berriak sortzen ditu pasahitz lehenetsiarekin.
 function addUser(
     string $nan,
     string $name,
@@ -31,6 +31,7 @@ function addUser(
 
 function getUsers(mysqli $conn): array
 {
+    // Erabiltzaileen zerrendan erabiltzaile bakoitzaren rolaren izena ere itzultzen da.
     $users = [];
     $result = $conn->query(
         'SELECT e.erabiltzaile_id, e.nan, e.izena, e.abizenak, e.posta_elektronikoa,
@@ -50,6 +51,7 @@ function getUsers(mysqli $conn): array
 
 function getStudents(mysqli $conn): array
 {
+    // Irakasleek ikasle-rola duten kontuak bakarrik ikusten dituzte.
     $students = [];
     $result = $conn->query(
         'SELECT e.erabiltzaile_id, e.nan, e.izena, e.abizenak, e.posta_elektronikoa,
@@ -70,6 +72,7 @@ function getStudents(mysqli $conn): array
 
 function deleteUser(int $userId, mysqli $conn): bool
 {
+    // Erabiltzailea ID bakarraren bidez ezabatzen da.
     $stmt = $conn->prepare('DELETE FROM erabiltzaileak WHERE erabiltzaile_id = ?');
     if (!$stmt) {
         throw new RuntimeException('Ezin izan da erabiltzailea ezabatu: ' . $conn->error);
@@ -83,6 +86,7 @@ function deleteUser(int $userId, mysqli $conn): bool
 
 function getUserById(int $userId, mysqli $conn): ?array
 {
+    // Editatzeko formularioa betetzeko erabiltzaile baten datuak berreskuratzen dira.
     $stmt = $conn->prepare(
         'SELECT erabiltzaile_id, nan, izena, abizenak, posta_elektronikoa, rol_id
          FROM erabiltzaileak
@@ -110,6 +114,7 @@ function updateUser(
     mysqli $conn
 ): bool
 {
+    // Pasahitza soilik eguneratzen da administratzaileak berrezartzea markatzen badu.
     if ($resetPassword) {
         $defaultPassword = DEFAULT_USER_PASSWORD;
         $stmt = $conn->prepare(

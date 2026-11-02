@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+// Erabiltzaile batek bere saioarekin lotutako ibilgailuak bakarrik kontsultatzen ditu.
 function getVehiclesByUserId(mysqli $conn, int $userId): array
 {
     $vehicles = [];
@@ -32,6 +33,7 @@ function addVehicle(
     int $userId,
     mysqli $conn
 ): bool {
+    // Matrícula gako nagusia denez, eragiketa honek matrikula bikoiztuak baztertzen ditu.
     $statement = $conn->prepare(
         'INSERT INTO ibilgailuak (matrikula, erabiltzaile_id, marka, modeloa)
          VALUES (?, ?, ?, ?)'
@@ -48,6 +50,7 @@ function addVehicle(
 
 function getAllVehicles(mysqli $conn): array
 {
+    // Administratzaileak ibilgailu guztiak ikusten ditu, jabearen izenarekin batera.
     $vehicles = [];
     $result = $conn->query(
         'SELECT v.matrikula, v.erabiltzaile_id, v.marka, v.modeloa,
@@ -74,6 +77,7 @@ function updateVehicle(
     int $userId,
     mysqli $conn
 ): bool {
+    // Jatorrizko matrikula erabiltzen da erregistroa aurkitzeko nahiz eta matrikula aldatu.
     $statement = $conn->prepare(
         'UPDATE ibilgailuak
          SET matrikula = ?, erabiltzaile_id = ?, marka = ?, modeloa = ?
@@ -91,6 +95,7 @@ function updateVehicle(
 
 function deleteVehicle(string $registration, mysqli $conn): bool
 {
+    // Ezabatzea matrikularekin lotutako ibilgailura mugatzen da.
     $statement = $conn->prepare('DELETE FROM ibilgailuak WHERE matrikula = ?');
     if (!$statement) {
         throw new RuntimeException('Ezin izan da ibilgailua ezabatu: ' . $conn->error);
